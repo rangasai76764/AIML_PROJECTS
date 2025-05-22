@@ -1,0 +1,27 @@
+# Financial Chatbot - Documentation
+
+## Overview
+This prototype is a simple rule-based AI chatbot designed to respond to 5 predefined financial queries using Python. It runs in the command-line interface and uses conditional statements to return responses based on dummy financial data.
+
+## Predefined Queries
+1. What is the total revenue?
+2. How has net income changed over the last year?
+3. What are the operating expenses?
+4. What is the profit margin?
+5. What is the earnings per share?
+
+## How it Works
+- The chatbot uses `if-else` conditions to match the user's query.
+- It returns hardcoded (pre-analyzed) financial values.
+- The script loops for continuous interaction until the user types "exit".
+
+## Limitations
+- Only works with exact predefined queries.
+- Cannot understand natural language variations or perform real-time analysis.
+- Doesn't use machine learning or external datasets.
+- No web or GUI interface (console only).
+
+## Future Enhancements
+- Integrate NLP for dynamic queries using libraries like NLTK or spaCy.
+- Use real-time financial datasets or APIs.
+- Deploy via Flask or Streamlit for web access.

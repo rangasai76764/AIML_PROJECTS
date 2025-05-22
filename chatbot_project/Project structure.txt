@@ -1,0 +1,5 @@
+chatbot_project/
+│
+├── chatbot.py                  # Python script with chatbot logic
+├── test_results.txt            # Sample test interaction log
+└── documentation.txt           # Short summary and limitations

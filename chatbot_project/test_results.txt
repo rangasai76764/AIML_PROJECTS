@@ -1,0 +1,14 @@
+User: What is the total revenue?
+Chatbot: The total revenue is $2.5 million.
+
+User: How has net income changed over the last year?
+Chatbot: The net income has increased by $200,000.
+
+User: What is the profit margin?
+Chatbot: The profit margin is 15%.
+
+User: What is the earnings per share?
+Chatbot: The earnings per share is $1.35.
+
+User: What is the CEO's name?
+Chatbot: Sorry, I can only provide information on predefined queries.
