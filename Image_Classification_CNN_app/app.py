@@ -10,7 +10,7 @@ class_names = ["T-shirt/top", "Trouser", "Pullover", "Dress", "Coat",
 # Load model
 @st.cache_resource
 def load_model():
-    return tf.keras.models.load_model("Image_Classification_CNN_app")
+    return tf.keras.models.load_model("Image_Classification_CNN_app.h5")
 
 model = load_model()
 
