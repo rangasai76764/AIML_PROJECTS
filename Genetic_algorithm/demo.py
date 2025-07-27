@@ -13,9 +13,6 @@ st.write(
     "for the **MAGIC Gamma Telescope** dataset."
 )
 
-# -----------------------------
-# Load dataset
-# -----------------------------
 @st.cache_data
 def load_data():
     url = "https://archive.ics.uci.edu/ml/machine-learning-databases/magic/magic04.data"
@@ -33,28 +30,25 @@ with st.expander("👀 Preview Data"):
     st.write(data.head())
     st.write(data.describe())
 
-# Shuffle and split
 data = data.sample(frac=1, random_state=42).reset_index(drop=True)
 X = data.drop("Class", axis=1).values
 y = data["Class"].values
 
-# Sidebar controls
-st.sidebar.header("🧪 TPOT Settings")
+# Sidebar
+st.sidebar.header("TPOT Settings")
 generations = st.sidebar.slider("Generations", 1, 20, 5)
 population_size = st.sidebar.slider("Population Size", 10, 200, 50, step=10)
-test_size = st.sidebar.slider("Test Size", 0.1, 0.4, 0.25, step=0.05)
-config_choice = st.sidebar.selectbox("Config Preset", ["Default (full)", "TPOT light"], index=1)
-config_dict = "TPOT light" if config_choice == "TPOT light" else None
-random_state = st.sidebar.number_input("Random State", value=42, step=1)
+test_size = st.sidebar.slider("Test Size", 0.1, 0.4, 0.25)
+config_dict = st.sidebar.selectbox("Preset", ["TPOT light", "Default"], index=0)
+config_dict = config_dict if config_dict == "TPOT light" else None
+random_state = st.sidebar.number_input("Random State", 0, 9999, 42)
 
-# Train/test split
 X_train, X_test, y_train, y_test = train_test_split(
     X, y, stratify=y, train_size=1 - test_size, random_state=random_state
 )
 
-# TPOT Training
 if st.button("🚀 Run TPOT"):
-    with st.spinner("Running TPOT... this may take a few minutes ⏳"):
+    with st.spinner("Running TPOT... please wait ⏳"):
         tpot = TPOTClassifier(
             generations=generations,
             population_size=population_size,
@@ -68,17 +62,9 @@ if st.button("🚀 Run TPOT"):
         y_pred = tpot.predict(X_test)
         acc = accuracy_score(y_test, y_pred)
 
-    st.success(f"✅ TPOT best model accuracy: **{acc:.4f}**")
-
-    # Export the pipeline
+    st.success(f"✅ TPOT model accuracy: **{acc:.4f}**")
     pipeline_code = tpot.export()
     st.code(pipeline_code, language="python")
-
-    st.download_button(
-        "📥 Download Generated pipeline.py",
-        data=pipeline_code,
-        file_name="pipeline.py",
-        mime="text/x-python",
-    )
+    st.download_button("📥 Download pipeline.py", pipeline_code, file_name="pipeline.py")
 else:
-    st.info("Set your parameters on the left and click **Run TPOT**.")
+    st.info("Set your parameters and click **Run TPOT**.")
