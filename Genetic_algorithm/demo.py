@@ -1,31 +1,48 @@
+import streamlit as st
 from tpot import TPOTClassifier
-from sklearn.cross_validation import train_test_split
-import pandas as pd 
+from sklearn.model_selection import train_test_split
+import pandas as pd
 import numpy as np
 
-#load the data
-telescope=pd.read_csv('MAGIC Gamma Telescope Data.csv')
+st.title("🧬 TPOT Genetic Algorithm Classifier")
 
-#clean the data
-telescope_shuffle=telescope.iloc[np.random.permutation(len(telescope))]
-tele=telescope_shuffle.reset_index(drop=True)
+st.write("This app uses TPOT (Genetic Programming) to automatically find the best ML model for the MAGIC Gamma Telescope dataset.")
 
-#Store 2 classes
-tele['Class']=tele['Class'].map({'g':0, 'h':1})
-tele_class = tele['Class'].values
+# Load the dataset
+@st.cache_data
+def load_data():
+    url = 'https://archive.ics.uci.edu/ml/machine-learning-databases/magic/magic04.data'
+    columns = ['fLength', 'fWidth', 'fSize', 'fConc', 'fConc1', 'fAsym', 'fM3Long', 'fM3Trans',
+               'fAlpha', 'fDist', 'Class']
+    df = pd.read_csv(url, header=None, names=columns)
+    df['Class'] = df['Class'].map({'g': 0, 'h': 1})  # gamma: 0, hadron: 1
+    return df
 
-#Split training, testing, and validation data
-training_indices, validation_indices = training_indices, testing_indices = train_test_split(tele.index,
-	stratify= tele_class, train_size=0.75, test_size=0.25)
+data = load_data()
 
-#Let Genetic Programming find best ML model and hyperparameters
-tpot = TPOTClassifier(generations=5, verbosity=2)
-tpot.fit(tele.drop('Class', axis=1).loc[training_indices].values,
-	tele.loc[training_indicss, 'Class'].values)
+# Show dataset preview
+if st.checkbox("Show raw data"):
+    st.write(data.head())
 
-#Score the accuracy
-tpot.score(tele.drop('Class', axis=1).loc[validation_indices].values,
-	tele.loc[validation_indices, 'Class'].values)
+# Shuffle and split data
+data = data.sample(frac=1, random_state=42).reset_index(drop=True)
+X = data.drop('Class', axis=1).values
+y = data['Class'].values
 
-#Export the generated code
-tpot.export('pipeline.py')
+# Train/test split
+X_train, X_test, y_train, y_test = train_test_split(X, y, stratify=y, train_size=0.75, random_state=42)
+
+# TPOT Classifier
+if st.button("Run TPOT"):
+    with st.spinner("Running TPOT... this may take a few minutes ⏳"):
+        tpot = TPOTClassifier(generations=5, population_size=20, verbosity=2, random_state=42, disable_update_check=True)
+        tpot.fit(X_train, y_train)
+
+        acc = tpot.score(X_test, y_test)
+        st.success(f"✅ TPOT best model accuracy: **{acc:.4f}**")
+
+        # Export pipeline
+        with open("pipeline.py", "w") as f:
+            f.write(tpot.export())
+
+        st.download_button("📥 Download Generated Pipeline", data=open("pipeline.py", "r").read(), file_name="pipeline.py")
