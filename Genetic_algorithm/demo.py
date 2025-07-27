@@ -21,7 +21,7 @@ def load_data():
         "fM3Long", "fM3Trans", "fAlpha", "fDist", "Class"
     ]
     df = pd.read_csv(url, header=None, names=columns)
-    df["Class"] = df["Class"].map({"g": 0, "h": 1})  # gamma:0, hadron:1
+    df["Class"] = df["Class"].map({"g": 0, "h": 1})
     return df
 
 data = load_data()
@@ -34,7 +34,6 @@ data = data.sample(frac=1, random_state=42).reset_index(drop=True)
 X = data.drop("Class", axis=1).values
 y = data["Class"].values
 
-# Sidebar
 st.sidebar.header("TPOT Settings")
 generations = st.sidebar.slider("Generations", 1, 20, 5)
 population_size = st.sidebar.slider("Population Size", 10, 200, 50, step=10)
