@@ -10,11 +10,11 @@ class_names = ["T-shirt/top", "Trouser", "Pullover", "Dress", "Coat",
 # Load model
 @st.cache_resource
 def load_model():
-    return tf.keras.models.load_model("fashion_mnist_cnn.h5")
+    return tf.keras.models.load_model("Image_Classification_CNN_app")
 
 model = load_model()
 
-st.title("🧠 Image Classification Using CNN (Fashion MNIST)")
+st.title("🧠 Image Classification Using CNN")
 st.write("Upload a 28x28 grayscale image to classify fashion items.")
 
 uploaded_file = st.file_uploader("Upload image...", type=["png", "jpg", "jpeg"])
