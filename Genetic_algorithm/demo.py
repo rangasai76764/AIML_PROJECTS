@@ -1,4 +1,3 @@
-import io
 import streamlit as st
 from tpot import TPOTClassifier
 from sklearn.model_selection import train_test_split
@@ -15,7 +14,7 @@ st.write(
 )
 
 # -----------------------------
-# Data loading
+# Load dataset
 # -----------------------------
 @st.cache_data
 def load_data():
@@ -30,34 +29,32 @@ def load_data():
 
 data = load_data()
 
-with st.expander("👀 Preview data"):
+with st.expander("👀 Preview Data"):
     st.write(data.head())
     st.write(data.describe())
 
-# Shuffle & split
+# Shuffle and split
 data = data.sample(frac=1, random_state=42).reset_index(drop=True)
 X = data.drop("Class", axis=1).values
 y = data["Class"].values
 
-# Sidebar params
-st.sidebar.header("TPOT Settings")
+# Sidebar controls
+st.sidebar.header("🧪 TPOT Settings")
 generations = st.sidebar.slider("Generations", 1, 20, 5)
-population_size = st.sidebar.slider("Population size", 10, 200, 50, step=10)
-test_size = st.sidebar.slider("Test size", 0.1, 0.4, 0.25, step=0.05)
-config_choice = st.sidebar.selectbox(
-    "Config preset",
-    options=["Default (full search space)", "TPOT light"],
-    index=1
-)
+population_size = st.sidebar.slider("Population Size", 10, 200, 50, step=10)
+test_size = st.sidebar.slider("Test Size", 0.1, 0.4, 0.25, step=0.05)
+config_choice = st.sidebar.selectbox("Config Preset", ["Default (full)", "TPOT light"], index=1)
 config_dict = "TPOT light" if config_choice == "TPOT light" else None
-random_state = st.sidebar.number_input("Random state", value=42, step=1)
+random_state = st.sidebar.number_input("Random State", value=42, step=1)
 
+# Train/test split
 X_train, X_test, y_train, y_test = train_test_split(
     X, y, stratify=y, train_size=1 - test_size, random_state=random_state
 )
 
+# TPOT Training
 if st.button("🚀 Run TPOT"):
-    with st.spinner("Running TPOT… this can take a few minutes ⏳"):
+    with st.spinner("Running TPOT... this may take a few minutes ⏳"):
         tpot = TPOTClassifier(
             generations=generations,
             population_size=population_size,
@@ -73,7 +70,7 @@ if st.button("🚀 Run TPOT"):
 
     st.success(f"✅ TPOT best model accuracy: **{acc:.4f}**")
 
-    # Export pipeline as text for download
+    # Export the pipeline
     pipeline_code = tpot.export()
     st.code(pipeline_code, language="python")
 
@@ -83,7 +80,5 @@ if st.button("🚀 Run TPOT"):
         file_name="pipeline.py",
         mime="text/x-python",
     )
-
-    st.info("Tip: Commit `pipeline.py` to your repo so others can use the best-found model directly.")
 else:
-    st.info("Set your parameters on the left, then click **Run TPOT**.")
+    st.info("Set your parameters on the left and click **Run TPOT**.")
