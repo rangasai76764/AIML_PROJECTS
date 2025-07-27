@@ -1,9 +1,2 @@
-# .streamlit/config.toml
-[server]
-headless = true
-
-[theme]
-base = "light"
-
-[python]
-version = "3.10"
+[runtime]
+pythonVersion = "3.10"
